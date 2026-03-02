@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do</title>
+
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e3c72">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #111;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px 25px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+        .add-btn {
+            background: #1e3c72;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .add-btn:hover {
+            background: #16325c;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            background: #f0f0f0;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .delete-btn {
+            background: #e63946;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c5303f;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>To-Do</h1>
+
+        <div class="input-group">
+            <input type="text" id="taskInput" placeholder="Enter a task...">
+            <button class="add-btn" onclick="addTask()">Add</button>
+        </div>
+
+        <ul id="taskList"></ul>
+    </div>
+
+    <script>
+
+        const taskList = document.getElementById("taskList");
+        const input = document.getElementById("taskInput");
+        let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+        function loadTasks() {
+            taskList.innerHTML = "";
+            tasks.forEach((task, index) => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+            <span>${task}</span>
+            <button class="delete-btn" onclick="deleteTask(${index})">X</button>
+        `;
+                taskList.appendChild(li);
+            });
+        }
+
+        function addTask() {
+            const task = input.value.trim();
+            if (task) {
+                tasks.push(task);
+                localStorage.setItem("tasks", JSON.stringify(tasks));
+                input.value = "";
+                loadTasks();
+            }
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+            loadTasks();
+        }
+
+        loadTasks();
+
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("service-worker.js")
+                .then(() => console.log("Service Worker Registered"));
+        }
+    </script>
+</body>
+
+</html>
